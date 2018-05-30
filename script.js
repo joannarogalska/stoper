@@ -1,7 +1,18 @@
 class Stopwatch {
-    constructor(display) {
+    static pad0(value) {
+        let result = value.toString();
+        if (result.length < 2) {
+            result = '0' + result;
+        }
+        return result;
+    }
+    constructor(component) {
+        this.component = component;
+        this.display = this.component.querySelector('.stopwatch');
+        this.component
+            .querySelector('.start')
+            .addEventListener('click', () => this.start());
         this.running = false;
-        this.display = display;
         this.reset();
         this.print(this.times);
     }
@@ -10,7 +21,7 @@ class Stopwatch {
         this.times = {
             minutes: 0,
             seconds: 0,
-            miliseconds: 0
+            miliseconds: 0,
         };
     }
 
@@ -19,7 +30,9 @@ class Stopwatch {
     }
 
     format(times) {
-        return `${pad0(times.minutes)}:${pad0(times.seconds)}:${pad0(Math.floor(times.miliseconds))}`;
+        return `${Stopwatch.pad0(times.minutes)}:${Stopwatch.pad0(
+            times.seconds
+        )}:${Stopwatch.pad0(Math.floor(times.miliseconds))}`;
     }
 
     start() {
@@ -54,13 +67,17 @@ class Stopwatch {
 
     resetTimer() {
         this.stop();
+        this.reset();
+        this.clearResults();
+        this.print();
+    }
+
+    clearResults() {
         let span = document.querySelector('.results');
-        var li = document.createElement('li');              // Create a <li> element
-        var time = document.createTextNode(this.format(this.times));     // Create a text node
+        var li = document.createElement('li'); // Create a <li> element
+        var time = document.createTextNode(this.format(this.times)); // Create a text node
         li.appendChild(time);
         span.appendChild(li);
-        this.reset();
-        this.print();
         let cleanButton = document.getElementById('clean');
         cleanButton.classList.remove('hide');
     }
@@ -71,30 +88,9 @@ class Stopwatch {
         span.querySelectorAll('li').forEach(function(li) {
             span.removeChild(li);
         });
-
     }
 }
 
-const stopwatch = new Stopwatch(
-    document.querySelector('.stopwatch'));
-
-let startButton = document.getElementById('start');
-startButton.addEventListener('click', () => stopwatch.start());
-
-let stopButton = document.getElementById('stop');
-stopButton.addEventListener('click', () => stopwatch.stop());
-
-let resetButton = document.getElementById('reset');
-resetButton.addEventListener('click', () => stopwatch.resetTimer());
-
-let cleanButton = document.getElementById('clean');
-cleanButton.addEventListener('click', () => stopwatch.clean());
-
-
-function pad0(value) {
-    let result = value.toString();
-    if (result.length < 2) {
-        result = '0' + result;
-    }
-    return result;
-}
+document
+    .querySelectorAll('.stopper')
+    .forEach(component => new Stopwatch(component));
